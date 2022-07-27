@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class loginTableViewController: UITableViewController {
 
@@ -20,26 +21,57 @@ class loginTableViewController: UITableViewController {
     }
 
     // MARK: - Table view data source
+    @IBOutlet weak var usernameInput: UITextView!
+    //
+    @IBOutlet weak var passwordInput: UITextView!
+    //    override func numberOfSections(in tableView: UITableView) -> Int {
+    @IBAction func loginButton(_ sender: Any) {
+        
+      guard
+        let email = usernameInput.text,
+        let password = passwordInput.text,
+        !email.isEmpty,
+        !password.isEmpty
+      else { return }
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
+      Auth.auth().signIn(withEmail: email, password: password) { user, error in
+        if let error = error, user == nil {
+          let alert = UIAlertController(
+            title: "Sign In Failed",
+            message: error.localizedDescription,
+            preferredStyle: .alert)
+
+          alert.addAction(UIAlertAction(title: "OK", style: .default))
+          self.present(alert, animated: true, completion: nil)
+        }
+          else{
+              self.dismiss(animated: true) {
+                  
+              }
+          }
+      }
     }
+    //        // #warning Incomplete implementation, return the number of sections
+//        return 1
+//    }
+//
+//    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        // #warning Incomplete implementation, return the number of rows
+//        return 1
+//    }
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 0
-    }
-
-    /*
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
-
-        return cell
-    }
-    */
+    
+//    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        let cell = tableView.dequeueReusableCell(withIdentifier: "loginViewCell", for: indexPath)
+//        let gradient:CAGradientLayer = CAGradientLayer()
+//        gradient.frame.size = cell.bounds.size
+//        gradient.colors = [UIColor.init(named: "CardColor")!.cgColor,UIColor.init(named: "CardColorEnd")!.cgColor] //Or any colors
+//            cell.layer.insertSublayer(gradient, at: 0)
+//
+//
+//        return cell
+//    }
+//    
 
     /*
     // Override to support conditional editing of the table view.

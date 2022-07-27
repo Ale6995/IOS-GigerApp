@@ -12,9 +12,7 @@ import CoreData
 
 extension Gigs {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<Gigs> {
-        return NSFetchRequest<Gigs>(entityName: "Gigs")
-    }
+
 
     @NSManaged public var image: String?
     @NSManaged public var budget: Double

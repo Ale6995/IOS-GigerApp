@@ -9,4 +9,9 @@ import UIKit
 
 class CustomCollectionViewCell: UICollectionViewCell {
     
+    @IBOutlet weak var cellImage: UIImageView!
+    
+    @IBOutlet weak var tittleLabel: UILabel!
+    @IBOutlet weak var creatorLabel: UILabel!
+    @IBOutlet weak var priceLabel: UILabel!
 }

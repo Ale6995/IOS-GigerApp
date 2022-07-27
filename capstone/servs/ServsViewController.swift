@@ -1,88 +1,117 @@
-//
-//  ServsCollectionViewController.swift
-//  capstone
-//
-//  Created by Alejandro Morales on 2021-12-06.
-//
+
 
 import UIKit
+import FirebaseAuth
+import FirebaseStorage
+import FirebaseFirestore
 
-private let reuseIdentifier = "Cell"
 
-class ServsCollectionViewController: UICollectionViewController {
 
+class ServsViewController: UIViewController {
+    
+    @IBOutlet weak var collectionView: UICollectionView!
+    var servsList = Array<GigModel>()
+    let db = Firestore.firestore()
+    let currentUser=Auth.auth().currentUser
+    
+            
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Register cell classes
-        self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-
+        
         // Do any additional setup after loading the view.
     }
+    override func viewWillAppear(_ animated: Bool) {
+        if(  currentUser == nil ){
+            
+                let storyBoard: UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+                let newViewController = storyBoard.instantiateViewController(withIdentifier: "loginFlow")
+                newViewController.isModalInPresentation=true
+                self.present(newViewController, animated: true, completion: nil)
+    //            self.show(newViewController, sender: nil)
+                
+        }else{
+            loadData()
+            
+        }
+        
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let viewController = segue.destination as? EditScreenTableViewController {
+                        viewController.screenType = "addServ"
+                    }
+    }
+    
 
     /*
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using [segue destinationViewController].
+        // Get the new view controller using segue.destination.
         // Pass the selected object to the new view controller.
     }
     */
 
-    // MARK: UICollectionViewDataSource
-
-    override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
+}
+extension ServsViewController:UICollectionViewDataSource{
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return servsList.count
     }
-
-
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of items
-        return 0
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
     
-        // Configure the cell
-    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell=collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as! CustomCollectionViewCell
+        let gradient:CAGradientLayer = CAGradientLayer()
+        gradient.frame.size = cell.bounds.size
+        gradient.colors = [UIColor.init(named: "CardColor")!.cgColor,UIColor.init(named: "CardColorEnd")!.cgColor] //Or any colors
+            cell.layer.insertSublayer(gradient, at: 0)
+        cell.layer.cornerRadius = 15
+        cell.cellImage.layer.cornerRadius = 15
+        
+        cell.tittleLabel.text=servsList[indexPath.row].tittle
+        cell.creatorLabel.text=servsList[indexPath.row].user
+        cell.priceLabel.text=servsList[indexPath.row].budget
+        
+        let url = URL(string: servsList[indexPath.row].image!)
+        if(url != nil){
+        DispatchQueue.global().async {
+            let data = try? Data(contentsOf: url! )
+            if(data != nil){
+            DispatchQueue.main.async {
+                cell.cellImage.image = UIImage(data: data!)
+            }
+                
+            }
+        }
+            
+        }
         return cell
     }
-
-    // MARK: UICollectionViewDelegate
-
-    /*
-    // Uncomment this method to specify if the specified item should be highlighted during tracking
-    override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-        return true
+    func loadData(){
+        let docsRef = db.collection("servs")
+        docsRef.whereField("user", isEqualTo: currentUser!.email!)
+            .getDocuments() { (querySnapshot, err) in
+                if let err = err {
+                    print("Error getting documents: \(err)")
+                } else {
+                    self.servsList.removeAll()
+                    for document in querySnapshot!.documents {
+                        let dict=document.data()
+                        let gig = GigModel();
+                        gig.tittle=dict[GigModel.CodingKeys.tittle.rawValue] as? String ?? ""
+                        gig.image=dict[GigModel.CodingKeys.image.rawValue] as? String ?? ""
+                        gig.budget=dict[GigModel.CodingKeys.budget.rawValue] as? String ?? ""
+                        gig.desc=dict[GigModel.CodingKeys.desc.rawValue] as? String ?? ""
+                        gig.other=dict[GigModel.CodingKeys.other.rawValue] as? String ?? ""
+                        gig.user=dict[GigModel.CodingKeys.user.rawValue] as? String ?? ""
+                        self.servsList.append(gig)
+                        
+                        print("gig: \(dict)")
+                    }
+                    self.collectionView.reloadData();
+                }
+        }
+        
     }
-    */
-
-    /*
-    // Uncomment this method to specify if the specified item should be selected
-    override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
-
-    /*
-    // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-    override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
     
-    }
-    */
-
 }
+
