@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="22" height="20" viewBox="0 0 22 20">
+  <defs>
+    <filter id="Symbol">
+      <feOffset dy="6" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-color="#7c1674" result="color"/>
+      <feComposite operator="out" in="SourceGraphic" in2="blur"/>
+      <feComposite operator="in" in="color"/>
+      <feComposite operator="in" in2="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g data-type="innerShadowGroup">
+    <text id="Symbol-2" data-name="Symbol" transform="translate(11 16)" fill="#1bd0c2" font-size="17" font-family="SF Pro"><tspan x="-10.696" y="0">􀋃</tspan></text>
+    <g transform="matrix(1, 0, 0, 1, 0, 0)" filter="url(#Symbol)">
+      <text id="Symbol-3" data-name="Symbol" transform="translate(11 16)" fill="#fff" font-size="17" font-family="SF Pro"><tspan x="-10.696" y="0">􀋃</tspan></text>
+    </g>
+  </g>
+</svg>

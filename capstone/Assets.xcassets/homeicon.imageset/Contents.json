@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "homeicon.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
